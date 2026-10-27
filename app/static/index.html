@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Management System | Google Workspace Style</title>
+  <link rel="stylesheet" href="css/google-theme.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%231a73e8'/><text x='50%' y='55%' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold' font-size='40' dy='.3em'>SMS</text></svg>">
+  <style>
+    /* Terminal Console Style for Live Logs */
+    .terminal-window {
+      background-color: #1e1e1e;
+      color: #d4d4d4;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      height: 480px;
+      overflow-y: auto;
+      border: 1px solid #333;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
+    }
+    .terminal-line { margin-bottom: 2px; word-break: break-all; }
+    .log-info { color: #4ec9b0; }
+    .log-warn { color: #dcdcaa; }
+    .log-err  { color: #f48771; }
+    .log-time { color: #858585; }
+
+    /* Login Screen Container (Google Style) */
+    .login-wrapper {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-page);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .google-login-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 440px;
+      padding: 40px 36px;
+      box-shadow: 0 4px 16px rgba(60,64,67,0.1);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================== -->
+  <!-- DEDICATED GOOGLE SIGN-IN SCREEN (Full Page) -->
+  <!-- ============================================== -->
+  <div id="loginScreen" class="login-wrapper" style="display:none;">
+    <div class="google-login-card">
+      <div class="brand-logo-icon" style="margin: 0 auto 18px auto; width: 48px; height: 48px; font-size: 24px;">G</div>
+      <h2 style="font-size: 24px; font-weight: 500; color: #202124; margin-bottom: 6px;">Sign in</h2>
+      <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 28px;">to continue to Student Management System</p>
+
+      <!-- Error Alert -->
+      <div id="loginErrorAlert" style="display:none; background: var(--google-red-light); color: var(--google-red); padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 18px; text-align: left; align-items:center; gap:8px;">
+        <span class="material-symbols-outlined" style="font-size:18px;">error</span>
+        <span id="loginErrorText">Invalid credentials</span>
+      </div>
+
+      <!-- Main Login Form -->
+      <form id="mainLoginForm" onsubmit="handleMainLogin(event)">
+        <div class="form-group" style="margin-bottom: 18px; text-align: left;">
+          <label class="form-label">Email or Username</label>
+          <input type="text" id="loginUsername" class="form-control" style="padding: 12px 14px; font-size: 15px;" placeholder="admin@school.edu" required autofocus autocomplete="username">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 24px; text-align: left;">
+          <label class="form-label">Password</label>
+          <input type="password" id="loginPassword" class="form-control" style="padding: 12px 14px; font-size: 15px;" placeholder="Enter password" required autocomplete="current-password">
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <label style="font-size: 13px; color: var(--text-secondary); display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" id="loginRememberMe" checked> Remember me
+          </label>
+          <a href="#" style="font-size: 13px; color: var(--google-blue); text-decoration: none;" onclick="showToast('Use demo accounts below for instant testing.')">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="loginSubmitBtn" style="width: 100%; padding: 11px; font-size: 15px; border-radius: 8px;">
+          Sign in
+        </button>
+      </form>
+
+      <!-- 1-Click Demo Accounts -->
+      <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border-subtle); text-align: left;">
+        <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 12px;">Quick Demo Accounts (1-Click)</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <button type="button" class="btn btn-outline" style="justify-content:flex-start; padding:8px 12px;" onclick="fillAndLogin('admin@school.edu', 'admin123')">
+            <div class="avatar" style="background:#ea4335; width:26px; height:26px; font-size:11px;">A</div>
+            <div style="font-size:12.5px; line-height:1.2;">
+              <strong>Administrator</strong> &bull; <span style="color:var(--text-secondary);">admin@school.edu</span>
+            </div>
+          </button>
+          <button type="button" class="btn btn-outline" style="justify-content:flex-start; padding:8px 12px;" onclick="fillAndLogin('sharma@school.edu', 'teacher123')">
+            <div class="avatar" style="background:#34a853; width:26px; height:26px; font-size:11px;">T</div>
+            <div style="font-size:12.5px; line-height:1.2;">
+              <strong>Faculty: Dr. Sharma</strong> &bull; <span style="color:var(--text-secondary);">sharma@school.edu</span>
+            </div>
+          </button>
+          <button type="button" class="btn btn-outline" style="justify-content:flex-start; padding:8px 12px;" onclick="fillAndLogin('rahul@school.edu', 'student123')">
+            <div class="avatar" style="background:#1a73e8; width:26px; height:26px; font-size:11px;">S</div>
+            <div style="font-size:12.5px; line-height:1.2;">
+              <strong>Student: Rahul Kumar</strong> &bull; <span style="color:var(--text-secondary);">rahul@school.edu</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MAIN APPLICATION SHELL -->
+  <!-- ============================================== -->
+  <div id="mainAppShell">
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <div class="brand-section">
+        <div class="brand-logo-icon">G</div>
+        <div>
+          <div class="brand-title">Student Management</div>
+          <div class="brand-badge">Enterprise v1.0</div>
+        </div>
+      </div>
+
+      <!-- Google Pill Search Bar -->
+      <div class="search-container">
+        <div class="search-box">
+          <span class="material-symbols-outlined" style="color: var(--text-secondary);">search</span>
+          <input type="text" id="globalSearchInput" placeholder="Search students, faculty, courses, admission numbers..." autocomplete="off">
+          <span class="shortcut-hint">Ctrl + K</span>
+        </div>
+      </div>
+
+      <!-- Role Switcher & User Profile & Logout -->
+      <div class="top-actions">
+        <!-- 1-Click Role Switcher for instant testing -->
+        <div class="role-switcher-group" title="Quickly switch roles to test full system">
+          <button class="role-btn active" id="roleBtnAdmin" onclick="switchRole('ADMIN')">
+            <span class="material-symbols-outlined" style="font-size:16px;">admin_panel_settings</span> Admin
+          </button>
+          <button class="role-btn" id="roleBtnTeacher" onclick="switchRole('TEACHER')">
+            <span class="material-symbols-outlined" style="font-size:16px;">badge</span> Teacher
+          </button>
+          <button class="role-btn" id="roleBtnStudent" onclick="switchRole('STUDENT')">
+            <span class="material-symbols-outlined" style="font-size:16px;">school</span> Student
+          </button>
+        </div>
+
+        <!-- User Chip -->
+        <div class="user-profile-badge" title="Active Logged In Profile">
+          <div class="avatar" id="currentUserAvatar">A</div>
+          <div class="user-details">
+            <span class="user-name" id="currentUserName">Administrator</span>
+            <span class="user-role-tag" id="currentUserRoleTag">Role: ADMIN</span>
+          </div>
+        </div>
+
+        <!-- Sign Out Button -->
+        <button class="btn btn-outline btn-sm" onclick="handleLogout()" title="Sign out of current account">
+          <span class="material-symbols-outlined" style="font-size:16px;">logout</span> Sign out
+        </button>
+      </div>
+    </header>
+
+    <div class="app-container">
+      <!-- Left Navigation Rail / Sidebar -->
+      <aside class="app-sidebar">
+        <div class="nav-section-title">Overview</div>
+        <a class="nav-item active" onclick="navigateTo('dashboard', this)">
+          <span class="material-symbols-outlined">dashboard</span>
+          <span>Dashboard</span>
+        </a>
+
+        <div class="nav-section-title" id="navSectionAdmin">Administration</div>
+        <a class="nav-item admin-only" onclick="navigateTo('students', this)">
+          <span class="material-symbols-outlined">school</span>
+          <span>Students</span>
+          <span class="badge-count" id="navStudentCount">0</span>
+        </a>
+        <a class="nav-item admin-only" onclick="navigateTo('teachers', this)">
+          <span class="material-symbols-outlined">badge</span>
+          <span>Faculty</span>
+          <span class="badge-count" id="navTeacherCount">0</span>
+        </a>
+        <a class="nav-item admin-only" onclick="navigateTo('courses', this)">
+          <span class="material-symbols-outlined">menu_book</span>
+          <span>Courses & Depts</span>
+        </a>
+        <a class="nav-item admin-only" onclick="navigateTo('offerings', this)">
+          <span class="material-symbols-outlined">how_to_reg</span>
+          <span>Class Offerings</span>
+        </a>
+
+        <div class="nav-section-title">Academic Ops</div>
+        <a class="nav-item" onclick="navigateTo('attendance', this)" id="navAttendanceItem">
+          <span class="material-symbols-outlined">fact_check</span>
+          <span>Daily Attendance</span>
+        </a>
+        <a class="nav-item" onclick="navigateTo('assessments', this)" id="navAssessmentsItem">
+          <span class="material-symbols-outlined">assignment</span>
+          <span>Exams & Marks</span>
+        </a>
+
+        <div class="nav-section-title student-only-section" id="navSectionStudent">Student View</div>
+        <a class="nav-item student-only" onclick="navigateTo('student-portal', this)" id="navStudentPortalItem">
+          <span class="material-symbols-outlined">account_circle</span>
+          <span>My Academic Record</span>
+        </a>
+
+        <div class="nav-section-title">Audit & System</div>
+        <a class="nav-item" onclick="navigateTo('audit', this)" id="navAuditItem">
+          <span class="material-symbols-outlined">receipt_long</span>
+          <span>Logs & Audit Trail</span>
+        </a>
+        <a class="nav-item" onclick="navigateTo('reports', this)">
+          <span class="material-symbols-outlined">file_download</span>
+          <span>Reports & Export</span>
+        </a>
+      </aside>
+
+      <!-- Main Dynamic Content Area -->
+      <main class="app-content">
+
+        <!-- ============================================== -->
+        <!-- VIEW 1: DASHBOARD -->
+        <!-- ============================================== -->
+        <section id="viewDashboard" class="view-panel">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title" id="dashGreeting">Institutional Overview</h1>
+              <p class="page-subtitle">Real-time academic metrics, enrollment status and institutional attendance</p>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-outline" onclick="navigateTo('audit')">
+                <span class="material-symbols-outlined">receipt_long</span> System Logs
+              </button>
+              <button class="btn btn-primary" onclick="openAddStudentModal()">
+                <span class="material-symbols-outlined">add</span> New Student
+              </button>
+            </div>
+          </div>
+
+          <!-- 4 Stat Cards -->
+          <div class="stat-cards-grid">
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Total Enrolled Students</div>
+                <div class="stat-value" id="dashTotalStudents">0</div>
+                <div class="stat-trend">
+                  <span class="material-symbols-outlined" style="font-size:16px;">trending_up</span> Active Cohort
+                </div>
+              </div>
+              <div class="stat-icon-wrapper icon-blue">
+                <span class="material-symbols-outlined">school</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Teaching Faculty</div>
+                <div class="stat-value" id="dashTotalTeachers">0</div>
+                <div class="stat-trend" style="color:var(--text-secondary);">
+                  Departments Assigned
+                </div>
+              </div>
+              <div class="stat-icon-wrapper icon-green">
+                <span class="material-symbols-outlined">badge</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Active Courses</div>
+                <div class="stat-value" id="dashTotalCourses">0</div>
+                <div class="stat-trend">
+                  Across 4 Departments
+                </div>
+              </div>
+              <div class="stat-icon-wrapper icon-yellow">
+                <span class="material-symbols-outlined">menu_book</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Institutional Attendance</div>
+                <div class="stat-value" id="dashAttendanceRate">0%</div>
+                <div class="stat-trend">
+                  <span class="material-symbols-outlined" style="font-size:16px;">check_circle</span> Average Rate
+                </div>
+              </div>
+              <div class="stat-icon-wrapper icon-blue">
+                <span class="material-symbols-outlined">analytics</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Department Breakdown + Recent Activity Stream -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div class="content-card">
+              <div class="card-header">
+                <div class="card-title">Department Distribution</div>
+                <span class="material-symbols-outlined" style="color: var(--text-tertiary);">pie_chart</span>
+              </div>
+              <div class="card-body">
+                <div id="deptDistributionList" style="display:flex; flex-direction:column; gap:12px;"></div>
+              </div>
+            </div>
+
+            <div class="content-card">
+              <div class="card-header">
+                <div class="card-title">Recent System Activity</div>
+                <a href="#" onclick="navigateTo('audit')" class="btn-text" style="font-size:12px;">View All Logs</a>
+              </div>
+              <div class="card-body" style="padding:0;">
+                <div id="dashAuditList"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 2: STUDENTS DIRECTORY -->
+        <!-- ============================================== -->
+        <section id="viewStudents" class="view-panel" style="display:none;">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Student Directory</h1>
+              <p class="page-subtitle">Manage student registrations, academic standing, and admission records</p>
+            </div>
+            <button class="btn btn-primary" onclick="openAddStudentModal()">
+              <span class="material-symbols-outlined">person_add</span> Add Student
+            </button>
+          </div>
+
+          <div class="content-card" style="margin-bottom: 16px;">
+            <div class="card-body" style="padding: 12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+              <div style="flex:1; min-width:240px; position:relative;">
+                <input type="text" id="studentFilterInput" class="form-control" placeholder="Search by name, admission no, or email..." oninput="loadStudents()">
+              </div>
+              <div style="min-width:180px;">
+                <select id="studentDeptFilter" class="form-control" onchange="loadStudents()">
+                  <option value="">All Departments</option>
+                </select>
+              </div>
+              <div style="min-width:140px;">
+                <select id="studentStatusFilter" class="form-control" onchange="loadStudents()">
+                  <option value="">All Statuses</option>
+                  <option value="ACTIVE" selected>Active</option>
+                  <option value="INACTIVE">Inactive</option>
+                </select>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="exportStudentsCsv()">
+                <span class="material-symbols-outlined">download</span> CSV
+              </button>
+            </div>
+          </div>
+
+          <div class="content-card">
+            <div class="card-body" style="padding:0;">
+              <table class="google-table">
+                <thead>
+                  <tr>
+                    <th>Student Name</th>
+                    <th>Admission No</th>
+                    <th>Department</th>
+                    <th>Contact Email</th>
+                    <th>Enrolled Classes</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="studentsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 3: FACULTY / TEACHERS -->
+        <!-- ============================================== -->
+        <section id="viewTeachers" class="view-panel" style="display:none;">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Faculty & Teachers</h1>
+              <p class="page-subtitle">Academic instructors, course assignments and employee credentials</p>
+            </div>
+            <button class="btn btn-primary" onclick="openAddTeacherModal()">
+              <span class="material-symbols-outlined">add</span> Add Faculty
+            </button>
+          </div>
+
+          <div class="content-card">
+            <div class="card-body" style="padding:0;">
+              <table class="google-table">
+                <thead>
+                  <tr>
+                    <th>Faculty Member</th>
+                    <th>Employee No</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                    <th>Email</th>
+                    <th>Active Offerings</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="teachersTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 4: COURSES & DEPARTMENTS -->
+        <!-- ============================================== -->
+        <section id="viewCourses" class="view-panel" style="display:none;">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Academic Courses & Curriculum</h1>
+              <p class="page-subtitle">Course catalog, department affiliations and credit distribution</p>
+            </div>
+            <button class="btn btn-primary" onclick="openAddCourseModal()">
+              <span class="material-symbols-outlined">add</span> New Course
+            </button>
+          </div>
+
+          <div class="content-card">
+            <div class="card-body" style="padding:0;">
+              <table class="google-table">
+                <thead>
+                  <tr>
+                    <th>Course Code</th>
+                    <th>Course Title</th>
+                    <th>Department</th>
+                    <th>Credits</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="coursesTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 5: CLASS OFFERINGS & ENROLLMENT -->
+        <!-- ============================================== -->
+        <section id="viewOfferings" class="view-panel" style="display:none;">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Class Offerings & Enrolled Cohorts</h1>
+              <p class="page-subtitle">Schedule offerings, allocate instructors and manage student class enrollments</p>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-outline" onclick="openEnrollStudentModal()">
+                <span class="material-symbols-outlined">person_add_alt_1</span> Enroll Student
+              </button>
+              <button class="btn btn-primary" onclick="openAddOfferingModal()">
+                <span class="material-symbols-outlined">add</span> Create Offering
+              </button>
+            </div>
+          </div>
+
+          <div class="content-card">
+            <div class="card-body" style="padding:0;">
+              <table class="google-table">
+                <thead>
+                  <tr>
+                    <th>Course</th>
+                    <th>Section</th>
+                    <th>Term / Semester</th>
+                    <th>Instructor</th>
+                    <th>Capacity</th>
+                    <th>Enrolled Roster</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="offeringsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 6: ATTENDANCE PORTAL -->
+        <!-- ============================================== -->
+        <section id="viewAttendance" class="view-panel" style="display:none;">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Attendance Tracking</h1>
+              <p class="page-subtitle">Record daily attendance, monitor engagement, and track attendance thresholds</p>
+            </div>
+            <button class="btn btn-primary" onclick="openCreateSessionModal()">
+              <span class="material-symbols-outlined">event</span> Create Session
+            </button>
+          </div>
+
+          <div class="content-card" style="margin-bottom:16px;">
+            <div class="card-body" style="padding: 12px 20px; display:flex; gap:16px; align-items:center;">
+              <label class="form-label" style="margin:0; white-space:nowrap;">Select Class Offering:</label>
+              <select id="attOfferingSelect" class="form-control" style="max-width:360px;" onchange="loadAttendanceSessions()"></select>
+            </div>
+          </div>
+
+          <div class="content-card" id="sessionsListCard">
+            <div class="card-header">
+              <div class="card-title">Scheduled Class Sessions</div>
+            </div>
+            <div class="card-body" style="padding:0;">
+              <table class="google-table">
+                <thead>
+                  <tr>
+                    <th>Session Date</th>
+                    <th>Topic / Lecture</th>
+                    <th>Course Offering</th>
+                    <th>Present Students</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="attendanceSessionsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Active Attendance Sheet -->
+          <div class="content-card" id="activeAttendanceSheetCard" style="display:none; margin-top:24px;">
+            <div class="card-header" style="background:var(--google-blue-light);">
+              <div>
+                <div class="card-title" id="activeSheetTitle" style="color:var(--google-blue);">Marking Attendance</div>
+                <div style="font-size:12px; color:var(--text-secondary);" id="activeSheetSubtitle">Session details</div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-outline btn-sm" onclick="markAllAttendance('PRESENT')">
+                  <span class="material-symbols-outlined">done_all</span> Mark All Present
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="saveActiveAttendance()">
+                  <span class="material-symbols-outlined">save</span> Save Attendance
+                </button>
+              </div>
+            </div>
+            <div class="card-body" style="padding:0;">
+              <table class="google-table">
+                <thead>
+                  <tr>
+                    <th>Admission No</th>
+                    <th>Student Name</th>
+                    <th style="width: 320px;">Status Toggle</th>
+                  </tr>
+                </thead>
+                <tbody id="activeAttendanceSheetBody"></tbody>
+              </table>
+            </div>
+            <div class="card-footer" style="padding:16px; display:flex; justify-content:space-between; align-items:center; background:var(--bg-page);">
+              <div id="attendanceStatsCounter" style="font-size:13px; font-weight:600;">Present: 0 | Absent: 0 | Late: 0</div>
+              <button class="btn btn-primary" onclick="saveActiveAttendance()">
+                <span class="material-symbols-outlined">save</span> Save Attendance Sheet
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 7: ASSESSMENTS & MARKS -->
+        <!-- ============================================== -->
+        <section id="viewAssessments" class="view-panel" style="display:none;">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Assessments & Examination Marks</h1>
+              <p class="page-subtitle">Configure examinations, record marks, and publish verified results</p>
+            </div>
+            <button class="btn btn-primary" onclick="openCreateAssessmentModal()">
+              <span class="material-symbols-outlined">add_task</span> New Assessment
+            </button>
+          </div>
+
+          <div class="content-card">
+            <div class="card-body" style="padding:0;">
+              <table class="google-table">
+                <thead>
+                  <tr>
+                    <th>Assessment Title</th>
+                    <th>Type</th>
+                    <th>Course Offering</th>
+                    <th>Exam Date</th>
+                    <th>Max Marks</th>
+                    <th>Evaluated Count</th>
+                    <th>Publish Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="assessmentsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 8: STUDENT PORTAL (MY ACADEMIC RECORD) -->
+        <!-- ============================================== -->
+        <section id="viewStudentPortal" class="view-panel" style="display:none;">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title" id="studentPortalName">Student Academic Portal</h1>
+              <p class="page-subtitle" id="studentPortalAdm">Admission: STU-2026-001 | Computer Science</p>
+            </div>
+            <div class="status-pill status-active" style="font-size:13px;">
+              <span class="material-symbols-outlined">verified</span> Enrolled in Good Standing
+            </div>
+          </div>
+
+          <div class="stat-cards-grid" style="grid-template-columns: 1fr 2fr;">
+            <div class="stat-card" style="flex-direction:column; align-items:center; text-align:center; padding: 24px;">
+              <div class="stat-label">Overall Attendance Percentage</div>
+              <div class="stat-value" id="studentOverallAttPct" style="font-size: 42px; margin: 12px 0; color:var(--google-blue);">0%</div>
+              <div id="studentAttStatusBadge" class="status-pill status-present">Eligible for Examinations (&ge; 75%)</div>
+            </div>
+
+            <div class="stat-card" style="display:block;">
+              <div class="stat-label" style="margin-bottom:12px;">Course-Wise Attendance Breakdown</div>
+              <div id="studentCourseAttList" style="display:flex; flex-direction:column; gap:12px;"></div>
+            </div>
+          </div>
+
+          <div class="content-card">
+            <div class="card-header">
+              <div class="card-title">Official Examination & Assessment Results</div>
+              <span class="status-pill status-present">Published Only</span>
+            </div>
+            <div class="card-body" style="padding:0;">
+              <table class="google-table">
+                <thead>
+                  <tr>
+                    <th>Course</th>
+                    <th>Assessment Title</th>
+                    <th>Type</th>
+                    <th>Maximum Marks</th>
+                    <th>Marks Obtained</th>
+                    <th>Percentage</th>
+                    <th>Grade</th>
+                  </tr>
+                </thead>
+                <tbody id="studentResultsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 9: AUDIT LOGS & LIVE SYSTEM LOGS EXPLORER -->
+        <!-- ============================================== -->
+        <section id="viewAudit" class="view-panel" style="display:none;">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">System Logs & Audit Trail</h1>
+              <p class="page-subtitle">Track security events, login attempts, student modifications and live server console logs</p>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <a href="/api/logs/download" class="btn btn-outline" download>
+                <span class="material-symbols-outlined">download</span> Download Log File
+              </a>
+              <button class="btn btn-primary" onclick="refreshCurrentLogsTab()">
+                <span class="material-symbols-outlined">refresh</span> Refresh Logs
+              </button>
+            </div>
+          </div>
+
+          <!-- Log Explorer Tabs -->
+          <div style="display:flex; gap:8px; margin-bottom:16px;">
+            <button class="role-btn active" id="tabAuditDbBtn" onclick="switchLogsTab('db')">
+              <span class="material-symbols-outlined" style="font-size:16px;">database</span> Database Audit Trails
+            </button>
+            <button class="role-btn" id="tabAuditConsoleBtn" onclick="switchLogsTab('console')">
+              <span class="material-symbols-outlined" style="font-size:16px;">terminal</span> Live Server Log Console (sms.log)
+            </button>
+          </div>
+
+          <!-- SUB-TAB 1: DATABASE AUDIT TRAIL -->
+          <div id="logSubTabDb">
+            <div class="content-card" style="margin-bottom: 16px;">
+              <div class="card-body" style="padding: 12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+                <div style="flex:1; min-width:240px;">
+                  <input type="text" id="auditSearchInput" class="form-control" placeholder="Search actor, reference ID, or details..." oninput="loadAuditLogs()">
+                </div>
+                <div style="min-width:180px;">
+                  <select id="auditActionFilter" class="form-control" onchange="loadAuditLogs()">
+                    <option value="">All Action Types</option>
+                    <option value="LOGIN">LOGIN</option>
+                    <option value="FAILED_LOGIN">FAILED_LOGIN</option>
+                    <option value="LOGOUT">LOGOUT</option>
+                    <option value="CREATE">CREATE</option>
+                    <option value="UPDATE">UPDATE</option>
+                    <option value="STATUS_CHANGE">STATUS_CHANGE</option>
+                    <option value="ATTENDANCE">ATTENDANCE</option>
+                    <option value="MARKS">MARKS</option>
+                    <option value="PUBLISH">PUBLISH</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="content-card">
+              <div class="card-body" style="padding:0;">
+                <table class="google-table">
+                  <thead>
+                    <tr>
+                      <th>Timestamp</th>
+                      <th>Actor</th>
+                      <th>Action</th>
+                      <th>Target Entity</th>
+                      <th>Reference ID</th>
+                      <th>Audit Details</th>
+                    </tr>
+                  </thead>
+                  <tbody id="auditTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-TAB 2: LIVE CONSOLE LOGS -->
+          <div id="logSubTabConsole" style="display:none;">
+            <div class="content-card">
+              <div class="card-header" style="background:#252526; color:#fff;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="material-symbols-outlined" style="color:var(--google-green);">terminal</span>
+                  <span style="font-family:monospace; font-size:13px;">Live Server Stream: app/sms.log</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <label style="font-size:12px; color:#aaa; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                    <input type="checkbox" id="autoRefreshLogsCheck" onchange="toggleAutoRefreshLogs(this.checked)"> Auto-refresh (3s)
+                  </label>
+                  <button class="btn btn-outline btn-sm" style="color:#fff; border-color:#555;" onclick="loadLiveFileLogs()">
+                    Refresh Now
+                  </button>
+                </div>
+              </div>
+              <div class="card-body" style="padding:0; background:#1e1e1e;">
+                <div class="terminal-window" id="liveTerminalOutput">
+                  <div class="terminal-line log-info">Loading real-time server logs...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 10: REPORTS & EXPORTS -->
+        <!-- ============================================== -->
+        <section id="viewReports" class="view-panel" style="display:none;">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Institutional Reports & Data Export</h1>
+              <p class="page-subtitle">Generate CSV records for compliance, administrative audits and student records</p>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
+            <div class="content-card">
+              <div class="card-body">
+                <span class="material-symbols-outlined" style="font-size:36px; color:var(--google-blue); margin-bottom:12px;">school</span>
+                <h3 style="font-size:17px; margin-bottom:6px;">Student Directory Report</h3>
+                <p style="font-size:13px; color:var(--text-secondary); margin-bottom:20px;">Complete register of all enrolled and historical students including department and admission numbers.</p>
+                <button class="btn btn-primary" onclick="exportStudentsCsv()">
+                  <span class="material-symbols-outlined">download</span> Download Students CSV
+                </button>
+              </div>
+            </div>
+
+            <div class="content-card">
+              <div class="card-body">
+                <span class="material-symbols-outlined" style="font-size:36px; color:var(--google-green); margin-bottom:12px;">fact_check</span>
+                <h3 style="font-size:17px; margin-bottom:6px;">Attendance Register Log</h3>
+                <p style="font-size:13px; color:var(--text-secondary); margin-bottom:20px;">Historical session attendance records, timestamped marks and student attendance status.</p>
+                <button class="btn btn-outline" onclick="exportAttendanceCsv()">
+                  <span class="material-symbols-outlined">download</span> Download Attendance CSV
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODALS -->
+  <!-- ============================================== -->
+
+  <!-- Add Student Modal -->
+  <div class="modal-overlay" id="addStudentModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">Register New Student</div>
+        <button class="btn-text" onclick="closeModal('addStudentModal')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="addStudentForm" onsubmit="submitAddStudent(event)">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Admission Number *</label>
+              <input type="text" id="stuAdmissionNo" class="form-control" placeholder="e.g. STU-2026-005" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Department *</label>
+              <select id="stuDeptSelect" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">First Name *</label>
+              <input type="text" id="stuFirstName" class="form-control" placeholder="First name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name *</label>
+              <input type="text" id="stuLastName" class="form-control" placeholder="Last name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Institutional Email *</label>
+              <input type="email" id="stuEmail" class="form-control" placeholder="student@school.edu" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contact Phone</label>
+              <input type="tel" id="stuPhone" class="form-control" placeholder="+91 98765 00000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date of Birth</label>
+              <input type="date" id="stuDob" class="form-control" value="2004-01-01">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gender</label>
+              <select id="stuGender" class="form-control">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Residential Address</label>
+            <input type="text" id="stuAddress" class="form-control" placeholder="Full address">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('addStudentModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Student Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Teacher Modal -->
+  <div class="modal-overlay" id="addTeacherModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">Add Faculty Member</div>
+        <button class="btn-text" onclick="closeModal('addTeacherModal')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="addTeacherForm" onsubmit="submitAddTeacher(event)">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Employee Number *</label>
+              <input type="text" id="tchEmpNo" class="form-control" placeholder="e.g. EMP-105" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Department *</label>
+              <select id="tchDeptSelect" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">First Name *</label>
+              <input type="text" id="tchFirstName" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name *</label>
+              <input type="text" id="tchLastName" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Designation</label>
+              <input type="text" id="tchDesignation" class="form-control" placeholder="e.g. Associate Professor">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email *</label>
+              <input type="email" id="tchEmail" class="form-control" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('addTeacherModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Faculty</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Course Modal -->
+  <div class="modal-overlay" id="addCourseModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">Create Academic Course</div>
+        <button class="btn-text" onclick="closeModal('addCourseModal')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="addCourseForm" onsubmit="submitAddCourse(event)">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Course Code *</label>
+              <input type="text" id="courseCode" class="form-control" placeholder="e.g. CS-401" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Department *</label>
+              <select id="courseDeptSelect" class="form-control" required></select>
+            </div>
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label">Course Title *</label>
+              <input type="text" id="courseName" class="form-control" placeholder="e.g. Machine Learning & Neural Networks" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Credits</label>
+              <input type="number" id="courseCredits" class="form-control" value="4.0" step="0.5" min="1" max="10">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Course Description</label>
+            <textarea id="courseDesc" class="form-control" rows="2" placeholder="Course syllabus overview..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('addCourseModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Course</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Class Offering Modal -->
+  <div class="modal-overlay" id="addOfferingModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">Create Class Offering</div>
+        <button class="btn-text" onclick="closeModal('addOfferingModal')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="addOfferingForm" onsubmit="submitAddOffering(event)">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Course *</label>
+              <select id="offeringCourseSelect" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Instructor *</label>
+              <select id="offeringTeacherSelect" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Section</label>
+              <input type="text" id="offeringSection" class="form-control" value="Sec-A" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Semester</label>
+              <input type="text" id="offeringSemester" class="form-control" value="Semester 3">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('addOfferingModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Offering</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Enroll Student Modal -->
+  <div class="modal-overlay" id="enrollStudentModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">Enroll Student in Class Offering</div>
+        <button class="btn-text" onclick="closeModal('enrollStudentModal')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="enrollStudentForm" onsubmit="submitEnrollStudent(event)">
+        <div class="modal-body">
+          <div class="form-group" style="margin-bottom:14px;">
+            <label class="form-label">Select Student *</label>
+            <select id="enrollStudentSelect" class="form-control" required></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Select Class Offering *</label>
+            <select id="enrollOfferingSelect" class="form-control" required></select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('enrollStudentModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Confirm Enrollment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Class Session Modal -->
+  <div class="modal-overlay" id="createSessionModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">Schedule New Class Session</div>
+        <button class="btn-text" onclick="closeModal('createSessionModal')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="createSessionForm" onsubmit="submitCreateSession(event)">
+        <div class="modal-body">
+          <div class="form-group" style="margin-bottom:14px;">
+            <label class="form-label">Class Offering *</label>
+            <select id="sessionOfferingSelect" class="form-control" required></select>
+          </div>
+          <div class="form-group" style="margin-bottom:14px;">
+            <label class="form-label">Session Date *</label>
+            <input type="date" id="sessionDateInput" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Topic / Lecture Agenda</label>
+            <input type="text" id="sessionTopicInput" class="form-control" placeholder="e.g. Chapter 4: Relational Algebra" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('createSessionModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Session</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Assessment Modal -->
+  <div class="modal-overlay" id="createAssessmentModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">Configure New Assessment</div>
+        <button class="btn-text" onclick="closeModal('createAssessmentModal')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="createAssessmentForm" onsubmit="submitCreateAssessment(event)">
+        <div class="modal-body">
+          <div class="form-group" style="margin-bottom:14px;">
+            <label class="form-label">Class Offering *</label>
+            <select id="assessmentOfferingSelect" class="form-control" required></select>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Assessment Title *</label>
+              <input type="text" id="assessmentName" class="form-control" placeholder="e.g. Mid-Term Examination" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Type</label>
+              <select id="assessmentType" class="form-control">
+                <option value="EXAM">Final / Mid Exam</option>
+                <option value="QUIZ">Quiz</option>
+                <option value="ASSIGNMENT">Assignment</option>
+                <option value="PROJECT">Project Work</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Maximum Marks *</label>
+              <input type="number" id="assessmentMaxMarks" class="form-control" value="50" min="1" max="500" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Exam Date</label>
+              <input type="date" id="assessmentDate" class="form-control" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('createAssessmentModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Assessment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Marks Entry Modal -->
+  <div class="modal-overlay" id="marksEntryModal">
+    <div class="modal-dialog" style="max-width: 650px;">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="marksModalTitle">Record Student Marks</div>
+          <div style="font-size:12px; color:var(--text-secondary);" id="marksModalSubtitle">Maximum Marks: 50</div>
+        </div>
+        <button class="btn-text" onclick="closeModal('marksEntryModal')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body" style="padding:0; max-height:60vh; overflow-y:auto;">
+        <table class="google-table">
+          <thead>
+            <tr>
+              <th>Admission No</th>
+              <th>Student</th>
+              <th style="width:160px;">Marks Obtained</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="marksSheetTableBody"></tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('marksEntryModal')">Close</button>
+        <button type="button" class="btn btn-primary" onclick="saveMarksSheet()">
+          <span class="material-symbols-outlined">save</span> Save Marks
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Box -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- App Logic JS -->
+  <script src="js/app.js"></script>
+</body>
+</html>

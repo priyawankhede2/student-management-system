@@ -1,0 +1,25 @@
+2026-10-27 15:12:32,622 [INFO] [SMS-Core] Student Management System Server started on http://localhost:8080/
+2026-10-27 15:12:37,970 [INFO] [SMS-Core] 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-10-27 15:12:38,036 [INFO] [SMS-Core] 127.0.0.1 - "GET /css/google-theme.css HTTP/1.1" 200 -
+2026-10-27 15:12:38,152 [INFO] [SMS-Core] 127.0.0.1 - "GET /js/app.js HTTP/1.1" 200 -
+2026-10-27 15:13:29,022 [INFO] [SMS-Core] LOGIN SUCCESS: User 'admin' authenticated with role [ADMIN].
+2026-10-27 15:13:29,036 [INFO] [SMS-Core] 127.0.0.1 - "POST /api/auth/login HTTP/1.1" 200 -
+2026-10-27 15:13:29,055 [INFO] [SMS-Core] 127.0.0.1 - "GET /api/departments HTTP/1.1" 200 -
+2026-10-27 15:13:29,061 [INFO] [SMS-Core] 127.0.0.1 - "GET /api/dashboard/stats HTTP/1.1" 200 -
+2026-10-27 15:13:29,068 [INFO] [SMS-Core] 127.0.0.1 - "GET /api/offerings HTTP/1.1" 200 -
+2026-10-27 15:13:29,073 [INFO] [SMS-Core] 127.0.0.1 - "GET /api/students?status=ACTIVE HTTP/1.1" 200 -
+2026-10-27 15:13:29,077 [INFO] [SMS-Core] 127.0.0.1 - "GET /api/courses HTTP/1.1" 200 -
+2026-10-27 15:13:29,082 [INFO] [SMS-Core] 127.0.0.1 - "GET /api/teachers HTTP/1.1" 200 -
+2026-10-27 15:13:29,088 [INFO] [SMS-Core] 127.0.0.1 - "GET /api/dashboard/stats HTTP/1.1" 200 -
+2026-10-27 15:13:33,750 [INFO] [SMS-Core] 127.0.0.1 - "GET /api/dashboard/stats HTTP/1.1" 200 -
+2026-10-27 15:14:09,381 [INFO] [SMS-Core] LOGOUT: User 'admin' signed out.
+2026-10-27 15:14:09,423 [INFO] [SMS-Core] 127.0.0.1 - "POST /api/auth/logout HTTP/1.1" 200 -
+2026-10-27 15:14:12,607 [INFO] [SMS-Core] LOGIN SUCCESS: User 'teacher_sharma' authenticated with role [TEACHER].
+2026-10-27 15:14:12,633 [INFO] [SMS-Core] 127.0.0.1 - "POST /api/auth/login HTTP/1.1" 200 -
+2026-10-27 15:14:12,666 [INFO] [SMS-Core] 127.0.0.1 - "GET /api/departments HTTP/1.1" 200 -
+2026-10-27 15:14:12,676 [INFO] [SMS-Core] 127.0.0.1 - "GET /api/dashboard/stats HTTP/1.1" 200 -
+2026-10-27 15:14:12,682 [INFO] [SMS-Core] 127.0.0.1 - "GET /api/offerings HTTP/1.1" 200 -
+2026-10-27 15:14:12,688 [INFO] [SMS-Core] 127.0.0.1 - "GET /api/students?status=ACTIVE HTTP/1.1" 200 -
+2026-10-27 15:14:12,693 [INFO] [SMS-Core] 127.0.0.1 - "GET /api/courses HTTP/1.1" 200 -
+2026-10-27 15:14:12,699 [INFO] [SMS-Core] 127.0.0.1 - "GET /api/teachers HTTP/1.1" 200 -
+2026-10-27 15:14:12,708 [INFO] [SMS-Core] 127.0.0.1 - "GET /api/attendance/sessions?offering_id=1 HTTP/1.1" 200 -
